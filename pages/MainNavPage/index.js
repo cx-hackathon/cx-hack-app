@@ -247,9 +247,16 @@ const MainNavPage =  ({ navigation, route }) => {
                     <ScrollView
                         horizontal
                     >
-                        <Image 
-                            source={pathGen ? genMap : blankMap}
-                        />
+                        
+                        {
+                            pathGen ?
+                            <Image 
+                                source={genMap}
+                            /> :
+                            <Image 
+                                source={blankMap}
+                            />
+                        }
                     </ScrollView>
                 </ScrollView>
             </View>
