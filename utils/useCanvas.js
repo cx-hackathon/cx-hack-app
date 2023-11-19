@@ -28,7 +28,7 @@ const useCanvas = (draw, preDraw, promiseResolve, frameRate = 30) => {
         const _preDraw = (ctx, canvas) => {
             ctx.clearRect(0, 0, context.canvas.width, context.canvas.height);
             // resizeCanvas(canvas);
-            if (preDraw) preDraw();
+            if (preDraw) preDraw(ctx);
         }
         
         

@@ -1,76 +1,148 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text } from "react-native";
-import Canvas from "react-native-canvas";
+import Canvas, { Image } from "react-native-canvas";
 import { CXColor } from "../../components/common/cx-constants";
 import CurrAirportHeader from "../../components/CurrAirportHeader";
 import useCanvas from "../../utils/useCanvas";
 import { useFocusEffect } from "@react-navigation/native";
+import WebView from "react-native-webview";
 
 const FPS = 20;
 
 const MainNavPage = ({ navigation, route }) => {
     // **** Touch Control Utils **** //
     
-    const lastPinchDistance = useRef(null);
-    const lastPinchAngle = useRef(null);
+    // const lastPinchDistance = useRef(null);
+    // const lastPinchAngle = useRef(null);
+    // const distanceDelta = useRef(0);
+    // const angleDelta = useRef(0);
+    // const totalScale = useRef(1);
 
-    const [touch, setTouch] = useState([])
+    // const [touch, setTouch] = useState([])
     
-    const onTouchStart = (evt) => {
-        const touches = evt.nativeEvent.changedTouches;
-        console.log(touches)
-        setTouch([...touch, 1])
-    }
-    
-    // **** Canvas Utils **** //
-    
-    const promiseQueue = useRef([]);
-    
-    const preDraw = () => {
+    // const onTouchStart = (evt) => {
+    //     const touches = evt.nativeEvent.changedTouches;
+    // }
+
+    // const handleSingleTouch = (nativeEvt) => {
+
+    // }
+
+    // const handleDoubleTouch = (nativeEvt) => {
+    //     const finger0 = nativeEvt.changedTouches[0];
+    //     const finger1 = nativeEvt.changedTouches[1];
         
-    }
-    
-    const mapDraw = (ctx, frameCount) => {
-        ctx.fillRect(0, 0, 100, 100);
-    }
-    
-    const promiseResolve = () => {
-        const corePromises = promiseQueue.current.map(value => value.promise);
-        const callbacks = promiseQueue.current.map(value => value.callback);
-        Promise.all(corePromises)
-        .then(Promise.all(callbacks))
-        .then(promiseQueue.current = [])
-        .catch(err => console.error(err))
-    }
-    
-    const wrapperRef = useRef();
-    const canvasRef = useCanvas(mapDraw, preDraw, promiseResolve, FPS);
-    
-    // **** Logic **** //
-    const [currAirport, setCurrAirport] = useState("HKG");
+    //     const deltaX = finger1.locationX - finger0.locationX;
+    //     const deltaY = finger1.locationY - finger0.locationY;
+    //     const currPinchDistance = Math.sqrt(deltaX**2 + deltaY**2);
+    //     const currPinchAngle = Math.tan(deltaY / deltaX);
 
-    const onMapStart = () => {
-        //TODO: on init, fetch map image and/or essential amenities
-    }
+        
+    //     if (!lastPinchAngle.current || !lastPinchDistance.current) {
+    //         lastPinchAngle.current = currPinchAngle;
+    //         lastPinchDistance.current = currPinchDistance;
+    //         return
+    //     }
+    //     // console.log(lastPinchAngle.current, ", ", lastPinchDistance.current)
 
-    useFocusEffect(() => {
-        if (route.params) {
-            console.log(route.params);
+    //     distanceDelta.current = 1 + (currPinchDistance - lastPinchDistance.current) / lastPinchDistance.current;
+    //     angleDelta.current = currPinchAngle - lastPinchAngle.current;
+    //     totalScale.current *= distanceDelta.current;
+    //     console.log(totalScale.current)
 
-            //TODO: call path gen using route.params.destination (location ID)
-        }
-    })
+    //     lastPinchDistance.current = currPinchDistance;
+    //     lastPinchAngle.current = currPinchAngle;
+    // }
 
-    useEffect(() => {
-        onMapStart();
-    }, [])
+    // const onTouchMove = (evt) => {
+    //     const moves = evt.nativeEvent.changedTouches;
+    //     if (moves.length === 1) {
+    //         handleSingleTouch(evt.nativeEvent)
+    //     }
+    //     else if (moves.length === 2) {
+    //         handleDoubleTouch(evt.nativeEvent)
+    //     }
+    // }
+
+    // const onTouchEnd = (evt) => {
+    //     lastPinchAngle.current = null;
+    //     lastPinchDistance.current = null;
+    //     distanceDelta.current = 1;
+    //     angleDelta.current = 1;
+    // }
+    
+    // // **** Canvas Utils **** //
+    
+    // const promiseQueue = useRef([]);
+    
+    // const preDraw = (ctx) => {
+    //     ctx.rotate(angleDelta.current);
+    //     ctx.scale(distanceDelta.current, distanceDelta.current);
+    //     angleDelta.current = 0;
+    //     distanceDelta.current = 1;
+    // }
+    
+    // const mapDraw = (ctx, frameCount) => {
+    //     ctx.fillRect(0, 0, 100, 100);
+    //     if (imgLoaded) ctx.drawImage(mapImg.current, 0,0);
+    // }
+    
+    // const promiseResolve = () => {
+    //     const corePromises = promiseQueue.current.map(value => value.promise);
+    //     const callbacks = promiseQueue.current.map(value => value.callback);
+    //     Promise.all(corePromises)
+    //     .then(Promise.all(callbacks))
+    //     .then(promiseQueue.current = [])
+    //     .catch(err => console.error(err))
+    // }
+    
+    // const wrapperRef = useRef();
+    // const canvasRef = useCanvas(mapDraw, preDraw, promiseResolve, FPS);
+    
+    // // **** Logic **** //
+    // const [currAirport, setCurrAirport] = useState("HKG");
+    // const [imgLoaded, setImgLoaded] = useState(false)
+
+    // const mapImg = useRef();
+
+    // const onMapStart = () => {
+    //     //TODO: on init, fetch map image and/or essential amenities
+    //     mapImg.current = new Image(canvasRef.current, 100, 300);
+    //     mapImg.current.addEventListener("load", () => {
+    //         console.log("fired")
+    //         setImgLoaded(true)
+    //     })
+    //     mapImg.current.src = "../../assets/map.png";
+    //     console.log("start loading")
+    // }
+
+    // useFocusEffect(() => {
+    //     if (route.params) {
+    //         console.log(route.params);
+
+    //         //TODO: call path gen using route.params.destination (location ID)
+    //     }
+    // })
+
+    // useEffect(() => {
+    //     onMapStart();
+    // }, [])
+
+    // useEffect(() => {
+    //     if (imgLoaded) console.log("image loaded")
+    //     else console.log("not loaded")
+    // }, [imgLoaded])
     
     return (
         <View>
-            <Text>{touch}</Text>
+            {/* <Text>{touch}</Text> */}
             <View
-                ref={wrapperRef}
-                onTouchStart={onTouchStart}
+                // ref={wrapperRef}
+                // onStartShouldSetResponder={evt => true}
+                // onMoveShouldSetResponder={evt => true}
+                // onResponderGrant={onTouchStart}
+                // onResponderMove={onTouchMove}
+                // onResponderRelease={onTouchEnd}
                 style={{
                     width: "100%",
                     // height: "100%",
@@ -79,16 +151,22 @@ const MainNavPage = ({ navigation, route }) => {
                     backgroundColor: CXColor.WHITE,
                 }}
             >
-                <Canvas
+                {/* <Canvas
                     ref={canvasRef}
                     style={{
                         width: "100%",
-                        // height: "100%",
+                        height: "100%",
                         height: 300,
-                        // flex: 1,
+                        flex: 1,
                         backgroundColor: CXColor.WHITE,
                     }}
-                />
+                /> */}
+                {/* <WebView 
+                    source={"10.129.10.118:3000"}
+                    style={{
+                        flex: 1,
+                    }}
+                /> */}
             </View>
         </View>
     )
