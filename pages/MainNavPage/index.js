@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text } from "react-native";
 import Canvas, { Image } from "react-native-canvas";
+//import { gql, request } from 'graphql-request';
+import { useMutation, useQuery, useLazyQuery , gql} from '@apollo/client';
 import { CXColor } from "../../components/common/cx-constants";
 import CurrAirportHeader from "../../components/CurrAirportHeader";
 import useCanvas from "../../utils/useCanvas";
@@ -9,7 +11,47 @@ import WebView from "react-native-webview";
 
 const FPS = 20;
 
-const MainNavPage = ({ navigation, route }) => {
+const MainNavPage =  ({ navigation, route }) => {
+  const [health, setHealth] = useState();
+    const healthcheckQuery = gql`
+      query {
+        healthcheck
+      }
+    `;
+    const [path, setPath] = useState();
+    const pathQuery = gql`
+      query {
+        shortestPath(input: { startNode: "g2", endNode: "r0" }) {
+          id
+          name
+          level
+        }
+      }
+    `;
+  const [queryhealth, { data, error, loading }] = useLazyQuery(healthcheckQuery, {
+    onCompleted: (data) => {
+      console.log(data)
+      setHealth(data.healthcheck);
+    },
+    fetchPolicy: 'network-only',
+  })
+  const [querypath] = useLazyQuery(pathQuery, {
+    onCompleted: (data) => {
+      console.log(data);
+      setPath(data.shortestPath);
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    queryhealth();
+  }, []);
+
+  useEffect(() => {
+      querypath();
+  }, []);
+
+  //
     // **** Touch Control Utils **** //
     
     // const lastPinchDistance = useRef(null);
@@ -116,13 +158,14 @@ const MainNavPage = ({ navigation, route }) => {
     //     console.log("start loading")
     // }
 
-    // useFocusEffect(() => {
-    //     if (route.params) {
-    //         console.log(route.params);
+     useFocusEffect(() => {
+         if (route.params) {
+             //console.log(route.params);
+              //querypath();
 
-    //         //TODO: call path gen using route.params.destination (location ID)
-    //     }
-    // })
+             //TODO: call path gen using route.params.destination (location ID)
+         }
+     })
 
     // useEffect(() => {
     //     onMapStart();
@@ -135,7 +178,8 @@ const MainNavPage = ({ navigation, route }) => {
     
     return (
         <View>
-            {/* <Text>{touch}</Text> */}
+      { /* <Text>{data}</Text> */ }
+      <Text>{health}</Text>
             <View
                 // ref={wrapperRef}
                 // onStartShouldSetResponder={evt => true}
