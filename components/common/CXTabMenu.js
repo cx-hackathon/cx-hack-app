@@ -47,6 +47,7 @@ const CXTabMenu = (props) => {
             {
                 props.menuOptions.map((value, index) => (
                     <CXTabItem 
+                        key={value.id}
                         id={value.id}
                         name={value.name}
                         selected={props.selected}

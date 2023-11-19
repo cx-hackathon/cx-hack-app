@@ -20,8 +20,14 @@ const CXTextInput = (props) => {
                 placeholder={props.placeholder}
                 value={props.value}
                 onChangeText={props.onChange}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
+                onFocus={() => {
+                    setFocused(true);
+                    props.onFocus();
+                }}
+                onBlur={() => {
+                    setFocused(false);
+                    props.onBlur();
+                }}
                 style={{
 
                 }}

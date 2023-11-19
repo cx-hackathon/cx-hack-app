@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text } from "react-native";
-import Canvas, { Image } from "react-native-canvas";
-import { CXColor } from "../../components/common/cx-constants";
+import { View, Text, Image } from "react-native";
+import Canvas from "react-native-canvas";
+import { CXColor, CXFont } from "../../components/common/cx-constants";
 import CurrAirportHeader from "../../components/CurrAirportHeader";
 import useCanvas from "../../utils/useCanvas";
 import { useFocusEffect } from "@react-navigation/native";
 import WebView from "react-native-webview";
+import { ScrollView } from "react-native";
+import ToIcon from "../../assets/svg/ToIcon";
 
 const FPS = 20;
 
@@ -116,13 +118,19 @@ const MainNavPage = ({ navigation, route }) => {
     //     console.log("start loading")
     // }
 
-    // useFocusEffect(() => {
-    //     if (route.params) {
-    //         console.log(route.params);
+    const blankMap = require("../../assets/map.png");
+    const genMap = require("../../assets/gen-map.png")
 
-    //         //TODO: call path gen using route.params.destination (location ID)
-    //     }
-    // })
+    const [pathGen, setPathGen] = useState();
+
+    useFocusEffect(() => {
+        if (route.params) {
+            console.log(route.params);
+
+            setPathGen("...")
+            //TODO: call path gen using route.params.destination (location ID)
+        }
+    })
 
     // useEffect(() => {
     //     onMapStart();
@@ -132,9 +140,31 @@ const MainNavPage = ({ navigation, route }) => {
     //     if (imgLoaded) console.log("image loaded")
     //     else console.log("not loaded")
     // }, [imgLoaded])
+
     
     return (
-        <View>
+        <View
+            style={{
+                flex: 1,
+            }}
+        >
+            <View
+                style={{
+                    width: "100%",
+                    backgroundColor: CXColor.WHITE,
+                    padding: 16,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottomWidth: 1,
+                    borderBottomColor: CXColor.LIGHT_GREY,
+                }}
+            >
+                <Text style={[CXFont.L]}>Gate 69</Text>
+                <ToIcon />
+                <Text style={[CXFont.L]}>Maccie's</Text>
+            </View>
             {/* <Text>{touch}</Text> */}
             <View
                 // ref={wrapperRef}
@@ -146,8 +176,8 @@ const MainNavPage = ({ navigation, route }) => {
                 style={{
                     width: "100%",
                     // height: "100%",
-                    height: 300,
-                    // flex: 1,
+                    // height: 300,
+                    flex: 1,
                     backgroundColor: CXColor.WHITE,
                 }}
             >
@@ -167,6 +197,19 @@ const MainNavPage = ({ navigation, route }) => {
                         flex: 1,
                     }}
                 /> */}
+                <ScrollView
+                    style={{
+                        flex: 1,
+                    }}
+                >
+                    <ScrollView
+                        horizontal
+                    >
+                        <Image 
+                            source={pathGen ? genMap : blankMap}
+                        />
+                    </ScrollView>
+                </ScrollView>
             </View>
         </View>
     )

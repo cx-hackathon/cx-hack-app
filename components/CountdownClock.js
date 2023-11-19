@@ -26,7 +26,7 @@ const CountdownDigit = (props) => {
 }
 
 const CountdownClock = (props) => {
-    const timeDelta = new Date(props.deadline - new Date());
+    const timeDelta = new Date(new Date(props.deadline).getTime() - Date.now());
 
     const hourStr = timeDelta.getHours().toString().padStart(2, '0');
     const minStr = timeDelta.getMinutes().toString().padStart(2, '0');

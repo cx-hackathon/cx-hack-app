@@ -5,10 +5,26 @@ import CurrAirportHeader from "../components/CurrAirportHeader";
 import MapIcon from "../assets/svg/MapIcon";
 import { CXColor } from "../components/common/cx-constants";
 import AmenityIcon from "../assets/svg/AmenityIcon";
+import { useState, useEffect } from "react";
 
 const Tab = createBottomTabNavigator();
 
 const MainTabNavigator = () => {
+    const [deadline, setDeadline] = useState(Date("2023-11-19T15:00:00"))
+  
+    useEffect(() => {
+    fetch("https://dtoi798bnqwwr.cloudfront.net/v1/customer/510892B0000153AC")
+      .then((res) => res.json())
+      .then((res) => {
+        const upcomingFlight = Object.values(res.data.flights)[0];
+        const timeObj = upcomingFlight.from.at;
+        const deadlineDateTime = new Date(`${timeObj.date}T${timeObj.time}`);
+        setDeadline(deadlineDateTime);
+      })
+      .catch((err) => console.error(err))
+
+  }, [])
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -16,6 +32,7 @@ const MainTabNavigator = () => {
                 header: () => <CurrAirportHeader 
                     airport="HKG"
                     terminal={69}
+                    deadline={deadline}
                 />,
                 tabBarActiveTintColor: CXColor.PRIMARY,
                 tabBarInactiveTintColor: CXColor.GREY,

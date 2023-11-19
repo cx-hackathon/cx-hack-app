@@ -92,7 +92,7 @@ const CurrAirportHeader = (props) => {
                     }}
                 >
                     <CountdownClock 
-                        deadline={new Date("2023-11-19T11:00:00")}
+                        deadline={props.deadline}
                     />
                     <Text style={[CXFont.S, {
                         color: CXColor.WHITE,

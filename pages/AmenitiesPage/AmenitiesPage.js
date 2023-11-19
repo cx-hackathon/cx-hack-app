@@ -32,16 +32,16 @@ const AmenitiesPage = ({ route, navigation }) => {
     ]
     
     const [amenities, setAmenities] = useState([
-        {
-            id: "fcsdur",
-            name: "Maccie's",
-            type: "rest",
-        },
-        {
-            id: "pcvisdc",
-            name: "Washroom",
-            type: "wash",
-        },
+        // {
+        //     id: "fcsdur",
+        //     name: "Maccie's",
+        //     type: "rest",
+        // },
+        // {
+        //     id: "pcvisdc",
+        //     name: "Washroom",
+        //     type: "wash",
+        // },
     ]);
     const [textFilter, setTextFilter] = useState("");
     const [selectedTab, setSelectedTab] = useState("all");
@@ -62,10 +62,19 @@ const AmenitiesPage = ({ route, navigation }) => {
             type: "wash",
         },
     ])
+    const [recommendVisible, setRecommendVisible] = useState(true);
+
+    const textOnFocus = () => {
+        setRecommendVisible(false);
+    }
+
+    const textOnBlur = () => {
+        setRecommendVisible(true);
+    }
 
     const dataFilter = (data) => 
         data.filter(value => 
-            value.name.includes(textFilter)
+            value.name ? value.name.includes(textFilter) : false
         ).filter(value => 
             selectedTab === "all" ? true :
             selectedTab === value.type
@@ -83,6 +92,57 @@ const AmenitiesPage = ({ route, navigation }) => {
     useEffect(() => {
         //TODO: fetch regular amenities and set to amenities state
         //TODO: call recommender system and set recommendedAmenities
+
+        var tmpAmenitiesArr = [];
+
+        fetch("https://dtoi798bnqwwr.cloudfront.net/v1/facilities/HKG?type=restaurant")
+            .then((res) => res.json())
+            .then((res) => {
+                var tmp = res.data;
+                tmp.forEach(value => {
+                    value.id = value.facility_id,
+                    value.type = "rest"
+                });
+                console.log(tmp)
+                tmpAmenitiesArr = tmpAmenitiesArr.concat(tmp)
+                console.log("fetched rest, ", tmpAmenitiesArr)
+            })
+            .then(() => {
+                fetch("https://dtoi798bnqwwr.cloudfront.net/v1/facilities/HKG?type=toilet")
+                    .then((res) => res.json())
+                    .then((res) => {
+                        var tmp = res.data;
+                        tmp.forEach(value => {
+                            value.id = value.facility_id,
+                            value.type = "wash"
+                        });
+                        console.log(tmp)
+                        tmpAmenitiesArr = tmpAmenitiesArr.concat(tmp)
+                        console.log("fetched toilet, ", tmpAmenitiesArr)
+                    })
+                    .then(() => {
+                        fetch("https://dtoi798bnqwwr.cloudfront.net/v1/facilities/HKG?type=gate")
+                        .then((res) => res.json())
+                        .then((res) => {
+                            var tmp = res.data;
+                            tmp.forEach(value => {
+                                value.id = value.facility_id,
+                                value.type = "gate"
+                            });
+                            console.log(tmp)
+                            tmpAmenitiesArr = tmpAmenitiesArr.concat(tmp)
+                            console.log("fetched gatw, ", tmpAmenitiesArr)
+                        })
+                        
+                        .then(() => setAmenities(tmpAmenitiesArr))
+                        .catch((err) => console.log(err))
+                    })
+                    .catch((err) => console.log(err))
+            })
+            .catch((err) => console.log(err))
+        
+
+        
     }, [])
     
     return (
@@ -101,53 +161,67 @@ const AmenitiesPage = ({ route, navigation }) => {
                         placeholder="Search for Amenities..."
                         value={textFilter}
                         onChange={setTextFilter}
+                        onFocus={textOnFocus}
+                        onBlur={textOnBlur}
                     />
                 </View>
 
-                <View
-                    style={{
-                        backgroundColor: CXColor.WHITE,
-                        paddingHorizontal: 16,
-                        paddingVertical: 12,
-                        borderTopWidth: 1,
-                        borderBottomWidth: 1,
-                        borderColor: CXColor.LIGHT_GREY,
-                    }}
-                >
-                    <Text
-                        style={[CXFont.L, {
-                            marginBottom: 6,
-                        }]}
-                    >
-                        Recommended for you
-                    </Text>
+                {
+                    recommendVisible && (
+                        <View
+                            style={{
+                                backgroundColor: CXColor.WHITE,
+                                paddingHorizontal: 16,
+                                paddingVertical: 12,
+                                borderTopWidth: 1,
+                                borderBottomWidth: 1,
+                                borderColor: CXColor.LIGHT_GREY,
+                            }}
+                        >
+                            <Text
+                                style={[CXFont.L, {
+                                    marginBottom: 6,
+                                }]}
+                            >
+                                Recommended for you
+                            </Text>
 
-                    {
-                        recommended.map((value, index) => (
-                            <RecommendedAmenity 
-                                id={value.id}
-                                name={value.name}
-                                type={value.type}
-                                rank={index}
-                                navigation={navigation}
-                            />
-                        ))
-                    }
-                </View>
+                            {
+                                recommended.map((value, index) => (
+                                    <RecommendedAmenity 
+                                        key={value.id}
+                                        id={value.id}
+                                        name={value.name}
+                                        type={value.type}
+                                        rank={index + 1}
+                                        navigation={navigation}
+                                    />
+                                ))
+                            }
+                        </View>
+                    )
+                }
+
 
                 <CXTabMenu 
                     menuOptions={menuOptions}
                     selected={selectedTab}
                     setSelected={setSelectedTab}
                 />
-                <FlatList 
-                    data={dataFilter(amenities)}
-                    renderItem={amenityRenderer}
-                    style={{
-                        paddingHorizontal: 24,
-                        paddingVertical: 16,
-                    }}
-                />
+
+                
+                        <FlatList 
+                            data={amenities.length > 0 ? dataFilter(amenities) : []}
+                            renderItem={amenityRenderer}
+                            style={{
+                                paddingHorizontal: 24,
+                                paddingVertical: 16,
+                                maxHeight: 250,
+                            }}
+                            contentContainerStyle={{
+                                paddingBottom: 30,
+                            }}
+                        />
             </View>
         </TouchableWithoutFeedback>
     )
